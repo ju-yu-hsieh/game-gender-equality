@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>學習證書 - SDGs性別平權</title>
+  <style>
+    body {
+      font-family: "微軟正黑體", sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+      text-align: center;
+    }
+    .certificate {
+      background: white;
+      border: 10px solid #5b9bd5;
+      padding: 40px;
+      width: 80%;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border-radius: 15px;
+    }
+    h1 {
+      color: #2e6da4;
+      font-size: 2.5em;
+    }
+    h2 {
+      color: #333;
+      margin: 20px 0;
+    }
+    p {
+      font-size: 1.2em;
+      color: #444;
+    }
+    .score-box {
+      margin: 20px 0;
+      font-size: 1.5em;
+      color: #2e6da4;
+    }
+    .name-input {
+      margin: 20px 0;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 200px;
+    }
+    button {
+      margin-top: 30px;
+      font-size: 1em;
+      padding: 10px 20px;
+      background-color: #2e6da4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1c4f78;
+    }
+    @media print {
+      .name-input, .print-button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="certificate">
+    <h1>🌟 學習證書 🌟</h1>
+    <h2>恭喜你完成SDGs性別平權挑戰！</h2>
+    <div class="name-input">
+      <label for="studentName">請輸入你的姓名：</label>
+      <input type="text" id="studentName" placeholder="輸入姓名">
+      <button onclick="generateCertificate()">產生證書</button>
+    </div>
+    <p>學員姓名：<span id="displayName" style="font-size: 1.5em; font-weight: bold;"></span></p>
+    <div class="score-box">
+      得分：100分<br>
+      評價：平權達人
+    </div>
+    <p>感謝你在性別平權議題上的努力與學習！<br>讓我們一起實現更公平的社會。</p>
+    <p>指導單位：新北市三重商工 資處科 謝佳儒老師</p>
+    <div class="print-button">
+      <button onclick="window.print()">列印學習證書</button>
+    </div>
+  </div>
+
+  <script>
+      function generateCertificate() {
+      const name = document.getElementById('studentName').value.trim();
+      if (name === '') {
+        alert('請輸入姓名');
+        return;
+      }
+      document.getElementById('displayName').textContent = name;
+    }
+  </script>
+</body>
+</html>
