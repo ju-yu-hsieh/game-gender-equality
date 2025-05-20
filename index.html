@@ -10,6 +10,7 @@
       background: url('images/village-background.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
+      overflow: hidden;
     }
 
     #title, #score {
@@ -63,7 +64,6 @@
       cursor: pointer;
     }
 
-    /* 遊戲說明畫面 */
     #intro-screen {
       position: fixed;
       top: 0;
@@ -106,10 +106,56 @@
       border: none;
       border-radius: 8px;
     }
+
+    /* 動態雲朵 */
+    .cloud {
+      position: absolute;
+      width: 150px;
+      height: 80px;
+      background: url('images/cloud.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.8;
+      animation: moveCloud 60s linear infinite;
+      z-index: 1;
+    }
+
+    .cloud1 {
+      top: 50px;
+      left: -200px;
+      animation-delay: 0s;
+    }
+
+    .cloud2 {
+      top: 120px;
+      left: -300px;
+      animation-delay: 20s;
+    }
+
+    @keyframes moveCloud {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(120vw); }
+    }
+
+    /* 粒子容器 */
+    #tsparticles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
   </style>
 </head>
 <body>
   <audio id="bg-music" src="audio/background-music.mp3" loop></audio>
+
+  <!-- 動態雲朵 -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+
+  <!-- 花瓣粒子容器 -->
+  <div id="tsparticles"></div>
 
   <!-- 遊戲說明畫面 -->
   <div id="intro-screen">
@@ -140,7 +186,43 @@
     <button id="next-btn" onclick="location.href='level2.html'">下一關</button>
   </div>
 
+  <!-- 粒子函式庫 v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
+    particlesJS("tsparticles", {
+      "particles": {
+        "number": { "value": 10 },
+        "shape": {
+          "type": "image",
+          "image": {
+            "src": "images/petal.png",
+            "width": 10,
+            "height": 10
+          }
+        },
+        "opacity": {
+          "value": 0.8,
+          "random": true
+        },
+        "size": {
+          "value": 16,
+          "random": true
+        },
+        "move": {
+          "direction": "bottom",
+          "speed": 1.5,
+          "out_mode": "out"
+        }
+      },
+      "interactivity": {
+        "events": {
+          "onhover": { "enable": false },
+          "onclick": { "enable": false }
+        }
+      },
+      "retina_detect": true
+    });
+
     const questions = [
       { q: '性別平權是聯合國哪一項永續發展目標？', a: ['第五項', '第一項', '第十項'], correct: 0 },
       { q: '下列何者不利於性別平等？', a: ['教育機會均等', '性別刻板印象', '平等薪資'], correct: 1 },
@@ -228,11 +310,10 @@
         hutElements.push(hut);
       }
 
-      // 背景音樂播放
       const bgMusic = document.getElementById('bg-music');
       document.body.addEventListener('click', () => {
         bgMusic.play().catch(e => {
-          console.log('使用者未互動，音樂播放被阻止');
+          console.log('音樂播放被阻止');
         });
       }, { once: true });
     }
