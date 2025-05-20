@@ -1,176 +1,241 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>SDGs性別平權</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: url('images/village-background.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: #fff;
-        }
-        #title {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        #score {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 18px;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        .hut {
-            position: absolute;
-            background: url('images/hut.png') no-repeat center center;
-            background-size: contain;
-            cursor: pointer;
-        }
-        #question-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-            width: 80%;
-            max-width: 500px;
-        }
-        #result-box {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0,0,0,0.9);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>SDGs性別平權</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('images/village-background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    #title, #score {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 5px;
+      z-index: 10;
+    }
+
+    #title {
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    #score {
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+    }
+
+    .hut {
+      position: absolute;
+      background: url('images/balloon.png') no-repeat center center;
+      background-size: contain;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    #question-box, #result-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+      display: none;
+      text-align: center;
+      z-index: 20;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* 遊戲說明畫面 */
+    #intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: left;
+      padding: 40px 20px;
+      z-index: 100;
+    }
+
+    #intro-screen h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #intro-screen ul {
+      list-style: none;
+      padding: 0;
+      line-height: 2;
+    }
+
+    #intro-screen li::before {
+      content: "☆";
+      margin-right: 8px;
+    }
+
+    #start-btn {
+      margin-top: 30px;
+      font-size: 20px;
+      padding: 12px 30px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-    <audio id="bg-music" src="audio/background-music.mp3" loop></audio>
+  <audio id="bg-music" src="audio/background-music.mp3" loop></audio>
 
-    <div id="title">SDGs性別平權</div>
-    <div id="score">答對題數: <span id="correctCount">0</span>/10</div>
+  <!-- 遊戲說明畫面 -->
+  <div id="intro-screen">
+    <h1>遊戲說明</h1>
+    <ul>
+      <li>請點選畫面中的熱汽球，每個熱汽球搭配 1 題單選題。</li>
+      <li>答題後，不論對、錯，答過題的熱汽球都會消失。</li>
+      <li>答對的題數如果小於 8 題，就出現重新挑戰的訊息與按鈕，請重新挑戰。</li>
+      <li>答對 8 題(含)以上，可以進入下一個關卡。</li>
+      <li>全部的關卡完成，可以製作個人的過關證書喔！</li>
+    </ul>
+    <button id="start-btn" onclick="startGame()">開始遊戲</button>
+  </div>
 
-    <div id="hut-container"></div>
+  <div id="title" style="display: none;">SDGs性別平權</div>
+  <div id="score" style="display: none;">答對題數: <span id="correctCount">0</span>/10</div>
 
-    <div id="question-box">
-        <div id="question-text"></div>
-        <div id="choices"></div>
-    </div>
+  <div id="hut-container"></div>
 
-    <div id="result-box">
-        <div id="result-message"></div>
-        <button id="retry-btn" onclick="location.reload()">重新挑戰</button>
-        <button id="next-btn" onclick="location.href='level2.html'">下一關</button>
-    </div>
+  <div id="question-box">
+    <div id="question-text"></div>
+    <div id="choices"></div>
+  </div>
 
-    <script>
-        const questions = [
-            { q: '性別平權是聯合國哪一項永續發展目標？', a: ['第五項', '第一項', '第十項'], correct: 0 },
-            { q: '下列何者不利於性別平等？', a: ['教育機會均等', '性別刻板印象', '平等薪資'], correct: 1 },
-            { q: '男女擁有相同的投票權是指？', a: ['政治平權', '經濟平權', '家庭平權'], correct: 0 },
-            { q: '哪個職場政策能促進性別平等？', a: ['性別歧視', '性騷擾容忍', '彈性育嬰假'], correct: 2 },
-            { q: '推動性別教育的目的是？', a: ['強化性別刻板印象', '提升性別意識', '只教女性自保'], correct: 1 },
-            { q: '下列哪一項是性別平等的指標？', a: ['女性參政比率', '男性平均壽命', '國民所得'], correct: 0 },
-            { q: '「重男輕女」觀念會導致？', a: ['人口平衡', '性別失衡', '女性權益提升'], correct: 1 },
-            { q: '何者為性別主流化的做法？', a: ['忽略性別', '制定性別友善政策', '只考慮男性需求'], correct: 1 },
-            { q: '性別平等與經濟成長的關係為？', a: ['無關', '負相關', '正相關'], correct: 2 },
-            { q: '性別平權最終目標是？', a: ['男性優勢', '女性至上', '平等對待每個人'], correct: 2 }
-        ];
+  <div id="result-box">
+    <div id="result-message"></div>
+    <button id="retry-btn" onclick="location.reload()">重新挑戰</button>
+    <button id="next-btn" onclick="location.href='level2.html'">下一關</button>
+  </div>
 
-        let answered = Array(10).fill(false);
-        let correctCount = 0;
-        let answeredCount = 0;
+  <script>
+    const questions = [
+      { q: '性別平權是聯合國哪一項永續發展目標？', a: ['第五項', '第一項', '第十項'], correct: 0 },
+      { q: '下列何者不利於性別平等？', a: ['教育機會均等', '性別刻板印象', '平等薪資'], correct: 1 },
+      { q: '男女擁有相同的投票權是指？', a: ['政治平權', '經濟平權', '家庭平權'], correct: 0 },
+      { q: '哪個職場政策能促進性別平等？', a: ['性別歧視', '性騷擾容忍', '彈性育嬰假'], correct: 2 },
+      { q: '推動性別教育的目的是？', a: ['強化性別刻板印象', '提升性別意識', '只教女性自保'], correct: 1 },
+      { q: '下列哪一項是性別平等的指標？', a: ['女性參政比率', '男性平均壽命', '國民所得'], correct: 0 },
+      { q: '「重男輕女」觀念會導致？', a: ['人口平衡', '性別失衡', '女性權益提升'], correct: 1 },
+      { q: '何者為性別主流化的做法？', a: ['忽略性別', '制定性別友善政策', '只考慮男性需求'], correct: 1 },
+      { q: '性別平等與經濟成長的關係為？', a: ['無關', '負相關', '正相關'], correct: 2 },
+      { q: '性別平權最終目標是？', a: ['男性優勢', '女性至上', '平等對待每個人'], correct: 2 }
+    ];
 
-        function showQuestion(index) {
-            if (answered[index]) return;
+    let answered = Array(10).fill(false);
+    let correctCount = 0;
+    let answeredCount = 0;
+    let hutElements = [];
 
-            const qBox = document.getElementById('question-box');
-            const qText = document.getElementById('question-text');
-            const choices = document.getElementById('choices');
-            qText.innerText = questions[index].q;
+    function showQuestion(index) {
+      if (answered[index]) return;
 
-            choices.innerHTML = '';
-            questions[index].a.forEach((choice, i) => {
-                const btn = document.createElement('button');
-                btn.innerText = choice;
-                btn.onclick = () => {
-                    if (i === questions[index].correct) {
-                        correctCount++;
-                        document.getElementById('correctCount').innerText = correctCount;
-                    }
-                    answered[index] = true;
-                    answeredCount++;
-                    qBox.style.display = 'none';
-                    if (correctCount >= 8 || answeredCount === 10) showResult();
-                };
-                choices.appendChild(btn);
-            });
+      const qBox = document.getElementById('question-box');
+      const qText = document.getElementById('question-text');
+      const choices = document.getElementById('choices');
+      qText.innerText = questions[index].q;
 
-            qBox.style.display = 'block';
-        }
+      choices.innerHTML = '';
+      questions[index].a.forEach((choice, i) => {
+        const btn = document.createElement('button');
+        btn.innerText = choice;
+        btn.onclick = () => {
+          if (i === questions[index].correct) {
+            correctCount++;
+            document.getElementById('correctCount').innerText = correctCount;
+          }
+          answered[index] = true;
+          answeredCount++;
+          if (hutElements[index]) {
+            hutElements[index].style.display = 'none';
+          }
+          qBox.style.display = 'none';
+          if (correctCount >= 8 || answeredCount === 10) showResult();
+        };
+        choices.appendChild(btn);
+      });
 
-        function showResult() {
-            const resultBox = document.getElementById('result-box');
-            const resultMessage = document.getElementById('result-message');
-            resultBox.style.display = 'block';
+      qBox.style.display = 'block';
+    }
 
-            if (correctCount >= 8) {
-                resultMessage.innerText = `恭喜你答對 ${correctCount} 題，進入下一關！`;
-                document.getElementById('retry-btn').style.display = 'none';
-                document.getElementById('next-btn').style.display = 'inline-block';
-            } else {
-                resultMessage.innerText = `你只答對 ${correctCount} 題，請重新挑戰！`;
-                document.getElementById('retry-btn').style.display = 'inline-block';
-                document.getElementById('next-btn').style.display = 'none';
-            }
-        }
+    function showResult() {
+      const resultBox = document.getElementById('result-box');
+      const resultMessage = document.getElementById('result-message');
+      resultBox.style.display = 'block';
 
-        // 隨機放置茅草屋（位置限制在上半部，大小隨機放大）
-        window.onload = function () {
-            const container = document.getElementById('hut-container');
-            for (let i = 0; i < 10; i++) {
-                const hut = document.createElement('div');
-                hut.className = 'hut';
-                const scale = [1.2, 1.5][Math.floor(Math.random() * 2)];
-                const size = 60 * scale;
-                hut.style.width = size + 'px';
-                hut.style.height = size + 'px';
-                hut.style.top = Math.floor(Math.random() * (window.innerHeight / 2 - size)) + 'px';
-                hut.style.left = Math.floor(Math.random() * (window.innerWidth - size)) + 'px';
-                hut.onclick = () => showQuestion(i);
-                container.appendChild(hut);
-            }
+      if (correctCount >= 8) {
+        resultMessage.innerText = `恭喜你答對 ${correctCount} 題，進入下一關！`;
+        document.getElementById('retry-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'inline-block';
+      } else {
+        resultMessage.innerText = `你只答對 ${correctCount} 題，請重新挑戰！`;
+        document.getElementById('retry-btn').style.display = 'inline-block';
+        document.getElementById('next-btn').style.display = 'none';
+      }
+    }
 
-            // 使用者點擊後播放音樂
-            const bgMusic = document.getElementById('bg-music');
-            document.body.addEventListener('click', () => {
-                bgMusic.play().catch(e => {
-                    console.log('使用者未互動，音樂播放被阻止');
-                });
-            }, { once: true });
-        }
-    </script>
+    function startGame() {
+      document.getElementById('intro-screen').style.display = 'none';
+      document.getElementById('title').style.display = 'block';
+      document.getElementById('score').style.display = 'block';
+
+      const container = document.getElementById('hut-container');
+
+      for (let i = 0; i < 10; i++) {
+        const hut = document.createElement('div');
+        hut.className = 'hut';
+        hut.dataset.index = i;
+        const scale = [1.2, 1.5][Math.floor(Math.random() * 2)];
+        const size = 60 * scale;
+        hut.style.width = size + 'px';
+        hut.style.height = size + 'px';
+        hut.style.top = Math.floor(Math.random() * (window.innerHeight / 2 - size)) + 'px';
+        hut.style.left = Math.floor(Math.random() * (window.innerWidth - size)) + 'px';
+        hut.onclick = () => showQuestion(i);
+        container.appendChild(hut);
+        hutElements.push(hut);
+      }
+
+      // 背景音樂播放
+      const bgMusic = document.getElementById('bg-music');
+      document.body.addEventListener('click', () => {
+        bgMusic.play().catch(e => {
+          console.log('使用者未互動，音樂播放被阻止');
+        });
+      }, { once: true });
+    }
+  </script>
 </body>
 </html>

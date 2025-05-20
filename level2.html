@@ -28,11 +28,13 @@
       background: rgba(0,0,0,0.5);
       padding: 5px 10px;
       border-radius: 10px;
+      display: none;
     }
     #flower-container {
       position: absolute;
       width: 100%;
       height: 100%;
+      display: none;
     }
     .flower {
       width: 80px;
@@ -96,6 +98,33 @@
       font-size: 1em;
       cursor: pointer;
     }
+    #intro {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 700px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 20;
+    }
+    #intro h2 {
+      margin-top: 0;
+    }
+    #intro ul {
+      padding-left: 20px;
+      text-align: left;
+    }
+    #intro button {
+      display: block;
+      margin: 20px auto 0 auto;
+      padding: 10px 20px;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -107,6 +136,21 @@
   <h1>SDGs性別平權-情境題</h1>
   <div id="score">得分：0</div>
   <div id="flower-container"></div>
+
+  <!-- 說明畫面 -->
+  <div id="intro">
+    <h2>🌸遊戲說明</h2>
+    <ul>
+      <li>請點選畫面中的花朵，每組花朵會搭配 1 個題組。</li>
+      <li>每個題組都有 2 個觀念，請將行為或語句拖進「性別平等 / 不平等」兩邊的框中。</li>
+      <li>結局會依答對題數給予不同等級的結果，例如：再加油、進步中、平權達人。</li>
+      <li>全部做答結束，會得到對應的挑戰級別。</li>
+      ☛ 如果等級是「再加油」、「進步中」，會出現「再次挑戰」按鈕，請重新挑戰。<br>
+      ☛ 如果等級是平權達人（答對 8 題以上），會出現「下載學習證書」按鈕，可以製作個人的過關證書喔！<br>
+      <li>挑戰結果對應的級別：<br>0–3 題為「再加油」、4–7 題為「進步中」、8–10 題為「平權達人」。</li>
+    </ul>
+    <button onclick="startGame()">開始遊戲</button>
+  </div>
 
   <div id="questionBox">
     <h2>請將下列語句分類到正確的框中</h2>
@@ -140,17 +184,42 @@
           { text: '育嬰假應男女平等', correct: '性別平等' },
           { text: '男生數理比較好', correct: '不平等' }
         ]
+      },
+      {
+        flowers: 'images/flower.png',
+        items: [
+          { text: '女生應該溫柔安靜', correct: '不平等' },
+          { text: '每個人都應有同樣的升遷機會', correct: '性別平等' }
+        ]
+      },
+      {
+        flowers: 'images/flower.png',
+        items: [
+          { text: '男主外女主內是自然分工', correct: '不平等' },
+          { text: '所有性別都應享有同等教育權利', correct: '性別平等' }
+        ]
       }
     ];
 
     let currentQ = 0;
     let score = 0;
-    const usedFlowers = [];
     let isSubmitted = false;
+
+    function startGame() {
+      document.getElementById('intro').style.display = 'none';
+      document.getElementById('flower-container').style.display = 'block';
+      document.getElementById('score').style.display = 'block';
+      createFlowers();
+      const audio = document.getElementById('bgm');
+      audio.volume = 0.8;
+      audio.play().catch(() => {
+        document.addEventListener('click', () => audio.play(), { once: true });
+      });
+    }
 
     function createFlowers() {
       const container = document.getElementById('flower-container');
-      const selected = questions.sort(() => 0.5 - Math.random()).slice(0, 3);
+      const selected = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
 
       selected.forEach((q) => {
         const flower = document.createElement('img');
@@ -160,7 +229,6 @@
         flower.style.bottom = `${Math.random() * 20 + 10}%`;
         flower.onclick = () => showQuestion(q, flower);
         container.appendChild(flower);
-        usedFlowers.push(q);
       });
     }
 
@@ -238,7 +306,7 @@
       document.getElementById('score').textContent = '得分：' + score;
       document.getElementById('questionBox').style.display = 'none';
 
-      if (currentQ >= 3) showResult();
+      if (currentQ >= 5) showResult();
     }
 
     function showResult() {
@@ -246,10 +314,10 @@
       let level = '';
       let html = '';
 
-      if (score < 4) {
+      if (score <= 3) {
         level = '再加油';
         html = `<div>${level}</div><button onclick="location.reload()">再次挑戰</button>`;
-      } else if (score < 6) {
+      } else if (score <= 7) {
         level = '進步中';
         html = `<div>${level}</div><button onclick="location.reload()">再次挑戰</button>`;
       } else {
@@ -259,15 +327,6 @@
 
       result.innerHTML = html;
       result.style.display = 'block';
-    }
-
-    window.onload = () => {
-      createFlowers();
-      const audio = document.getElementById('bgm');
-      audio.volume = 0.8;
-      audio.play().catch(() => {
-        document.addEventListener('click', () => audio.play(), { once: true });
-      });
     }
   </script>
 </body>
